@@ -84,8 +84,7 @@ class CVTCL(nn.Module):
 
 
 class CVCTLv2(torch.nn.Module):
-    def __init__(self, edge_decoder, in_channels, hidden_channels, out_channels, num_layers,
-                 dropout):
+    def __init__(self, edge_decoder, in_channels, hidden_channels, out_channels, num_layers, dropout, num_cat_layers=1):
         super(CVCTLv2, self).__init__()
         self.convs = torch.nn.ModuleList()
         self.convs.append(GCNConv(in_channels, hidden_channels, cached=False, add_self_loops=False))
@@ -99,6 +98,7 @@ class CVCTLv2(torch.nn.Module):
         # self.convs.append(HeteroSeparatedConv())
         self.edge_decoder = edge_decoder
         self.dropout = dropout
+        self.num_cat_layers = num_cat_layers
         self.activation = nn.ELU()
 
     def reset_parameters(self):
@@ -113,7 +113,20 @@ class CVCTLv2(torch.nn.Module):
             x = self.activation (x)
             x = F.dropout(x, p=self.dropout, training=self.training)
 
-        x = self.convs[-1](x, adj_t)
-        x = self.activation(x)
+        if self.num_cat_layers == 1:
+            x = self.convs[-1](x, adj_t)
+            x = self.activation(x)
+        elif self.num_cat_layers == 2:
+            h1 = self.activation(self.convs[0](x, adj_t))
+            h1 = self.dropout(h1)
+            h_all = torch.cat([x, h1], dim=-1)
+            x = self.fusion(h_all)
+        elif self.num_cat_layers == 3:
+            h1 = self.activation(self.convs[0](x, adj_t))
+            h1 = self.dropout(h1)
+            h2 = self.activation(self.convs[1](h1, adj_t))
+            h2 = self.dropout(h2)
+            h_all = torch.cat([x, h1, h2], dim=-1)
+            x = self.fusion(h_all)
 
         return x
