@@ -1,0 +1,1 @@
+This paper proposes a cross-view topological consistency learning (CVTCL) method that involves learning topology adaptive edge representations across augmented graph views to reconstruct missing edges. It is currently under review.
