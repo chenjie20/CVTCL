@@ -17,7 +17,7 @@ parser.add_argument('--dataset_name', type=str, default='Cora',
                     choices=['Cora', 'Citeseer', 'Pubmed', 'Photo', 'Computers', 'CS', 'Physics', 'Actor', 'Chameleon', 'Squirrel', 'Cornell', 'Texas', 'Wisconsin'],
                     help='Dataset name')
 parser.add_argument( "--node_coder_name", type=str, default='HO', choices=['HO', 'HE'], help='HO and HE denote homophilic and heterophilic graphs, respectively.' )
-parser.add_argument('--gpu', default=2, type=int, help='GPU device idx.')
+parser.add_argument('--gpu', default=0, type=int, help='GPU device idx.')
 
 parser.add_argument('--lr', type=float, default=5e-3, help='Initializing learning rate chosen from [1e-3, 5e-3, 5e-2]')
 parser.add_argument('--weight_decay', type=float, default=0, help='Initializing weight decay.')
@@ -221,9 +221,7 @@ def get_param_grids():
         lr_params = np.array([5e-3, 1e-3, 5e-4, 1e-2], dtype=np.float32)
         dims_layers = np.array([512, 1024, 2048], dtype=np.int32)
         batch_sizes = np.array([512, 1024, 2048], dtype=np.int32)
-        num_neighbors_layers_set = np.array([[50, 25], [30, 15], [15, 10], [10, 5]], dtype=np.int32)
-        # num_neighbors_layers_set = np.array([[30, 15]], dtype=np.int32)
-        # model_dropouts = np.array([0.6, 0.7, 0.8], dtype=np.float32)
+        num_neighbors_layers_set = np.array([[50, 25], [30, 15], [15, 10]], dtype=np.int32)
         model_dropouts = np.array([0.6, 0.8], dtype=np.float32)
 
         # lr_params = np.array([5e-3], dtype=np.float32) #Pubmed
@@ -262,18 +260,11 @@ def get_param_grids():
         num_neighbors_layers_set = np.array([[400, 200]], dtype=np.int32)
         model_dropouts = np.array([0.05, 0.1], dtype=np.float32)
 
-    elif args.dataset_name in {'Chameleon', 'Squirrel'}:
+    elif args.dataset_name in {'Chameleon'}:
         lr_params = np.array([5e-3, 1e-3, 1e-2], dtype=np.float32)
         dims_layers = np.array([512, 256], dtype=np.int32)
         batch_sizes = np.array([8192, 4096, 2048], dtype=np.int32)
         num_neighbors_layers_set = np.array([[400, 200]], dtype=np.int32)
-        model_dropouts = np.array([0.05, 0.1, 0.2], dtype=np.float32)
-
-    elif args.dataset_name in {'Cornell', 'Texas', 'Wisconsin'}:
-        lr_params = np.array([5e-3, 1e-3, 1e-2], dtype=np.float32)
-        dims_layers = np.array([256, 128], dtype=np.int32)
-        batch_sizes = np.array([8192, 4096, 2048], dtype=np.int32)
-        num_neighbors_layers_set = np.array([[20, 10]], dtype=np.int32)
         model_dropouts = np.array([0.05, 0.1, 0.2], dtype=np.float32)
 
     else:
@@ -287,7 +278,7 @@ def get_param_grids():
 
 if __name__ == '__main__':
 
-    print("Starting main execution...")
+    print("Starting...")
 
     set_seed(args.seed)
     set_default_config()
@@ -362,7 +353,7 @@ if __name__ == '__main__':
                     pbar.set_postfix(epoch=f'{epoch}', loss=f'{total_loss:.3f}',
                                      test_hits=f'{test_hits_result:.4f}', val_hits=f'{val_hits_result:.4f}')
                     # print('epoch {} loss:{:.4f} test_hits:{:.2f} val_hits:{:.4f}'.format(epoch, total_loss, test_hits_result * 100, val_hits_result))
-                    with open('TCYB_%s_result_details_%s.txt' % (args.dataset_name, args.gpu), 'a+') as f:
+                    with open('CVTCL_%s_result_details_%s.txt' % (args.dataset_name, args.gpu), 'a+') as f:
                         f.write('{:.4f} \t {} \t {} \t {} \t {:.2f} \t {:.2f} \t {} \t {} \t {:.4f} \t {:.2f} \n'.format(args.lr,
                                                                                args.hidden_feature_dim,
                                                                                args.hidden_edge_dim,
@@ -389,7 +380,7 @@ if __name__ == '__main__':
         test_hits_std = test_hits_list.std().item()
         print('test_hits_mean:{:.2f} test_hits_std:{:.4f}'.format(
             test_hits_mean * 100, test_hits_std))
-        with open('TCYB_%s_result_%s.txt' % (args.dataset_name, args.gpu),
+        with open('CVTCL_%s_result_%s.txt' % (args.dataset_name, args.gpu),
                   'a+') as f:
             f.write(
                 '{:.4f} \t {} \t {} \t {:.2f} \t {:.2f} \t {} \t {} \t {:.4f} \t {:.2f} \t \n'.format(args.lr,
