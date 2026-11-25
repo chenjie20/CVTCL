@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser(description='CVTCL')
 parser.add_argument('--dataset_name', type=str, default='Cora',
-                    choices=['Cora', 'Citeseer', 'Pubmed', 'Photo', 'Computers', 'CS', 'Physics', 'Actor', 'Chameleon', 'Squirrel', 'Cornell', 'Texas', 'Wisconsin'],
+                    choices=['Cora', 'Citeseer', 'Pubmed', 'Photo', 'Computers', 'CS', 'Physics', 'Actor', 'Chameleon'],
                     help='Dataset name')
 parser.add_argument( "--node_coder_name", type=str, default='HO', choices=['HO', 'HE'], help='HO and HE denote homophilic and heterophilic graphs, respectively.' )
 parser.add_argument('--gpu', default=0, type=int, help='GPU device idx.')
@@ -254,18 +254,12 @@ def get_param_grids():
         num_neighbors_layers_set = np.array([[400, 200]], dtype=np.int32)
         model_dropouts = np.array([0.1, 0.2], dtype=np.float32)
 
-    elif args.dataset_name in {'Actor'}:
-        lr_params = np.array([5e-3, 1e-3, 1e-2], dtype=np.float32)
-        batch_sizes = np.array([8192, 4096, 2048], dtype=np.int32)
-        num_neighbors_layers_set = np.array([[400, 200]], dtype=np.int32)
-        model_dropouts = np.array([0.05, 0.1], dtype=np.float32)
-
-    elif args.dataset_name in {'Chameleon'}:
+    elif args.dataset_name in {'Actor', 'Chameleon'}:
         lr_params = np.array([5e-3, 1e-3, 1e-2], dtype=np.float32)
         dims_layers = np.array([512, 256], dtype=np.int32)
         batch_sizes = np.array([8192, 4096, 2048], dtype=np.int32)
         num_neighbors_layers_set = np.array([[400, 200]], dtype=np.int32)
-        model_dropouts = np.array([0.05, 0.1, 0.2], dtype=np.float32)
+        model_dropouts = np.array([0.05, 0.1], dtype=np.float32)
 
     else:
         raise NotImplementedError('Dataset {} is not supported.'.format(args.dataset_name))
